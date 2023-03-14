@@ -1,0 +1,16 @@
+name: maven-test
+
+on: [pull_request]
+
+jobs:
+  mvn-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: package w/o mvn-test
+        run: mvn package -DskipTests
+      - name: Maven mvn-test
+        run: mvn test
+
