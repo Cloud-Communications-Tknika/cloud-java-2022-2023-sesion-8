@@ -16,7 +16,7 @@ public class Persona {
     @Column(name="alive")
     private boolean alive;
 
-
+    public Persona(){}
     
     public Persona(String id, String name, int age)
     {
