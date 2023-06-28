@@ -1,16 +1,14 @@
 version: '3.3'
 services:
   app:
-    build: .
+    image: <TU-IMAGEN>
     environment:
       DBHOST: 'db'
       DBPASS: 'password'
       DBUSER: 'user'
       DBNAME: 'db'
     ports:
-      - '8090:8080'
-    expose:
-      - '8080'
+      - '8080:8080'
   db:
     image: mysql:5.7
     restart: always
@@ -22,12 +20,6 @@ services:
       MYSQL_PASSWORD: 'password'
       # Password for root access
       MYSQL_ROOT_PASSWORD: 'password'
-    ports:
-      # <Port exposed> : < MySQL Port running inside container>
-      - '3306:3306'
-    expose:
-      # Opens port 3306 on the container
-      - '3306'
       # Where our data will be persisted
     volumes:
       - my-db:/var/lib/mysql
