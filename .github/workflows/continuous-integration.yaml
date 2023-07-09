@@ -1,0 +1,15 @@
+name: Continuous integration
+
+on: [pull_request]
+
+jobs:
+  continuous-integration:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: package w/o mvn-test
+        run: mvn package -DskipTests
+      - name: Maven mvn-test
+        run: mvn test
