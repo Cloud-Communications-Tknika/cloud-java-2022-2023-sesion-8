@@ -1,0 +1,44 @@
+name: Continuous Deployment
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  continuous-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Wait for continuous-delivery to succeed
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.ref }}
+          check-name: 'continuous-delivery'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+      - name: Copy docker-compose.yaml file via ssh password
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_HOST_USER }}
+          key: ${{ secrets.AWS_HOST_KEY }}
+          source: ./docker-compose.yaml
+          target: ./docker-compose.yaml
+
+      - name: Deploy on AWS
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_HOST_USER }}
+          key: ${{ secrets.AWS_HOST_KEY }}
+          script: | 
+            export APP_IMAGE_NAME=ghcr.io/${{ github.repository }} 
+            echo ${APP_IMAGE_NAME}
+            sudo docker compose down
+            sudo docker compose up -d
